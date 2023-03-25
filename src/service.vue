@@ -1,5 +1,4 @@
 <script setup>
-import { defineExpose } from 'vue'
 
 function testDBConnect() {
     console.log("test connsect")
