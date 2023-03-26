@@ -16,6 +16,10 @@ var desserts = [
         calories: 262,
     }
 ]
+
+function click(item) {
+    console.log(item)
+}
 </script>
 
 <template>

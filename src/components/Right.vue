@@ -1,19 +1,11 @@
 <script setup>
 import { useConfigStore } from '../store/index.js'
-import { ref } from 'vue'
-import Service from "../service.vue"
 
 var switchMe = false
 const configStore = useConfigStore()
-const service = ref(null)
-
-function testConnect() {
-  service.value.testDBConnect()
-}
 </script>
 
 <template>
-  <Service ref="service"></Service>
   <v-card style="padding: 5%; margin: 5%;">
     <v-card-title class="text-h6 text-md-h5 text-lg-h4">基础配置</v-card-title>
     <v-responsive class="mx-auto" max-width="2554">
@@ -29,7 +21,7 @@ function testConnect() {
         label="数据库密码"></v-text-field>
 
     </v-responsive>
-    <v-btn @click="testConnect">连接测试</v-btn>
+    <v-btn>连接测试</v-btn>
 
     <v-card-title class="text-h6 text-md-h5 text-lg-h4">运行配置</v-card-title>
     <v-radio-group>
