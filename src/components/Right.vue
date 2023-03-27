@@ -1,8 +1,18 @@
 <script setup>
-import { useConfigStore } from '../store/index.js'
+import {useConfigStore} from '../store/index.js'
+import {invoke} from '@tauri-apps/api'
 
 var switchMe = false
 const configStore = useConfigStore()
+
+function testConnect() {
+  invoke('get_db_connect', {
+    end_point: configStore.config.common.db_endpoint,
+    database: configStore.config.common.db_database,
+    user_name: configStore.config.common.db_user,
+    password: configStore.config.common.db_password
+  }).then((response) => console.log(response))
+}
 </script>
 
 <template>
@@ -10,18 +20,18 @@ const configStore = useConfigStore()
     <v-card-title class="text-h6 text-md-h5 text-lg-h4">基础配置</v-card-title>
     <v-responsive class="mx-auto" max-width="2554">
       <v-text-field v-model="configStore.config.common.backend_endpoint" class="common_text_entry" hide-details="auto"
-        label="后端地址" placeholder="192.168.2.2:8080"></v-text-field>
+                    label="后端地址" placeholder="192.168.2.2:8080"></v-text-field>
       <v-text-field v-model="configStore.config.common.db_endpoint" class="common_text_entry" hide-details="auto"
-        label="数据库地址" placeholder="192.168.2.2:8600"></v-text-field>
+                    label="数据库地址" placeholder="192.168.2.2:8600"></v-text-field>
       <v-text-field v-model="configStore.config.common.db_database" class="common_text_entry" hide-details="auto"
-        label="数据库名称"></v-text-field>
+                    label="数据库名称"></v-text-field>
       <v-text-field v-model="configStore.config.common.db_user" class="common_text_entry" hide-details="auto"
-        label="数据库用户名"></v-text-field>
+                    label="数据库用户名"></v-text-field>
       <v-text-field v-model="configStore.config.common.db_password" class="common_text_entry" hide-details="auto"
-        label="数据库密码"></v-text-field>
+                    label="数据库密码"></v-text-field>
 
     </v-responsive>
-    <v-btn>连接测试</v-btn>
+    <v-btn @click="testConnect()">连接测试</v-btn>
 
     <v-card-title class="text-h6 text-md-h5 text-lg-h4">运行配置</v-card-title>
     <v-radio-group>
@@ -32,7 +42,8 @@ const configStore = useConfigStore()
       <template v-slot:label>
         运行状态:
         <v-progress-circular :indeterminate="switchMe" size="24" class="ms-2"></v-progress-circular>
-      </template></v-switch>
+      </template>
+    </v-switch>
   </v-card>
 </template>
 

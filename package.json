@@ -4,10 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "vite",
+    "tauri": "tauri",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tauri-apps/api": "^1.2.0",
     "buffer": "^6.0.3",
     "element-plus": "^2.3.1",
     "events": "^3.3.0",
@@ -22,6 +24,7 @@
   "devDependencies": {
     "@mdi/font": "^7.2.96",
     "@mdi/js": "^7.2.96",
+    "@tauri-apps/cli": "^1.2.3",
     "@types/mysql": "^2.15.21",
     "@vitejs/plugin-vue": "^4.0.0",
     "vite": "^4.1.4"
