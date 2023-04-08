@@ -1,13 +1,15 @@
 <script setup>
 import {useConfigStore} from '../store/index.js'
-import {ref, reactive} from 'vue'
+import {ref, reactive, onMounted} from 'vue'
 import {invoke} from "@tauri-apps/api";
+import {listen} from '@tauri-apps/api/event'
 
 // 样式控制
 const dialog = ref(false)
 const infoBarShow = ref(false);
 const infoBarText = ref("");
 const dialogMod = ref("")
+const modelState = reactive(new Map)
 
 // 核心数据
 const configStore = useConfigStore()
@@ -18,6 +20,17 @@ const modelDialog = reactive({
   selectObject: [],
   propertyConfs: []
 })
+
+onMounted(() => {
+  onListenModelState()
+})
+
+async function onListenModelState() {
+  await listen("model_state", (e) => {
+    modelState.set(e.payload.model_name, e.payload.state)
+    console.log(modelState)
+  })
+}
 
 function getModelList() {
   return invoke('get_model_list').then((response) => {
@@ -192,7 +205,7 @@ function updateCurrentModelConfig() {
       </template>
     </v-snackbar>
     <!--  添加模型-->
-    <v-btn @click="openModelConfigDialog('add',null)" color="primary">
+    <v-btn style="margin-left: 20px" @click="openModelConfigDialog('add',null)" color="primary">
       添加模型配置
       <v-icon end icon="mdi-plus"></v-icon>
     </v-btn>
@@ -322,32 +335,50 @@ function updateCurrentModelConfig() {
 
     <!--模型配置列表-->
     <v-table density="compact" fixed-header height="500px">
-      <thead>
-      <tr>
-        <th class="text-left">
-          名称
-        </th>
-        <th class="text-left">
-          标识
-        </th>
-        <th class="操作">
-          操作
-        </th>
-      </tr>
-      </thead>
       <tbody>
       <tr v-for="item in configStore.config.modelConfs" :key="item.name">
-        <td><strong>{{ item.modelDisplayName }}</strong></td>
-        <td>{{ item.modelName }}</td>
         <td>
-          <v-btn @click="openModelConfigDialog('update',item)"
-                 size="x-small"
-                 icon="mdi-pen"
-                 color="red"></v-btn>
-          <v-btn @click="removeModelConf(item)"
-                 size="x-small"
-                 icon="mdi-delete-outline"
-                 color="primary"></v-btn>
+          <v-card color="#ecf2fe" style="padding:0px 0;margin: 15px 0;">
+            <v-card-title class="text-h6">
+              <!--异常时-->
+              <v-badge v-show="modelState.get(item.modelName)!=null&&!modelState.get(item.modelName)" content="异常"
+                       color="error">
+                <div>
+                  <strong>{{ item.modelDisplayName }}</strong>
+                  <v-icon icon="mdi-bell-ring"></v-icon>
+                </div>
+              </v-badge>
+              <!--正常时-->
+              <v-badge v-show="modelState.get(item.modelName)" content="正常" color="success">
+                <div>
+                  <strong>{{ item.modelDisplayName}}   </strong>
+                  <v-icon icon="mdi-bell-ring"></v-icon>
+                </div>
+              </v-badge>
+              <!--等待中-->
+              <div v-show="modelState.get(item.modelName)==null">
+                <strong>{{ item.modelDisplayName }}</strong>
+                <v-icon icon="mdi-bell-ring"></v-icon>
+              </div>
+
+            </v-card-title>
+
+            <v-card-subtitle>{{ item.modelName }}</v-card-subtitle>
+
+            <div style="padding: 10px">
+              <v-btn @click="openModelConfigDialog('update',item)"
+                     color="primary"
+                     variant="flat">修改
+                <v-icon end icon="mdi-pen"></v-icon>
+              </v-btn>
+              <v-btn style="margin-left: 10px"
+                     @click="removeModelConf(item)"
+                     color="error">删除
+                <v-icon end icon="mdi-delete-outline"></v-icon>
+              </v-btn>
+            </div>
+          </v-card>
+
         </td>
       </tr>
       </tbody>

@@ -14,7 +14,6 @@ import {createPinia} from 'pinia'
 const pinia = createPinia()
 
 const myCustomLightTheme = {
-    dark: true,
     colors: {
         primary: '#354cbe',
         'primary-darken-1': '#316fb6',

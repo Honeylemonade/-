@@ -9,6 +9,7 @@ const infoBarShow = ref(false);
 const infoBarText = ref("");
 const log = ref("");
 const running = ref(false);
+const connectSuccess = ref(false)
 
 // 核心数据
 const configStore = ref(useConfigStore())
@@ -46,7 +47,7 @@ function stop() {
 onMounted(() => {
   onListenLog()
   onListenProgress()
-  // 改变样式
+  // // 改变样式
   document.body.style.setProperty("--el-color-primary", "#212121");
   document.body.style.setProperty("--el-border-color-base", "#212121");
   document.body.style.setProperty("--el-border-color-light", "#212121");
@@ -59,6 +60,9 @@ async function onListenLog() {
   await listen("log", (e) => {
     let date = new Date()
     log.value += ('【' + date.toLocaleString() + '】' + e.payload + '\n')
+    const textarea = document.getElementById('textarea');
+    textarea.scrollTop = textarea.scrollHeight;
+
   })
 }
 
@@ -92,138 +96,140 @@ function testConnect() {
       infoBarText.value = "后端服务连接失败!";
     } else if (response === "Success") {
       infoBarShow.value = true;
+      connectSuccess.value = true;
       infoBarText.value = "连接成功!";
     }
   })
 }
-
-
 </script>
 
 <template>
   <v-card>
-    <v-card-title class="text-lg-h5"><strong>基础配置</strong></v-card-title>
-    <v-responsive class="mx-auto" max-width="2554">
-      <v-text-field
-          density="compact"
-          variant="outlined"
-          v-model="configStore.config.common.backend_endpoint"
-          class="common_text_entry"
-          hide-details="auto"
-          label="后端地址" placeholder="192.168.2.2:8080"></v-text-field>
-      <v-text-field
-          density="compact"
-          variant="outlined" v-model="configStore.config.common.db_endpoint" class="common_text_entry"
-          hide-details="auto"
-          label="数据库地址" placeholder="192.168.2.2:8600"></v-text-field>
-      <v-text-field
-          density="compact"
-          variant="outlined" v-model="configStore.config.common.db_database" class="common_text_entry"
-          hide-details="auto"
-          label="数据库名称"></v-text-field>
-      <v-text-field
-          density="compact"
-          variant="outlined" v-model="configStore.config.common.db_user"
-          class="common_text_entry"
-          hide-details="auto"
-          label="数据库用户名"></v-text-field>
-      <v-text-field
-          density="compact"
-          variant="outlined"
-          v-model="configStore.config.common.db_password"
-          class="common_text_entry"
-          hide-details="auto"
-          label="数据库密码"></v-text-field>
-    </v-responsive>
+    <div v-show="!connectSuccess">
+      <v-card-title class="text-lg-h5"><strong>基础配置</strong></v-card-title>
+      <v-responsive class="mx-auto" max-width="2554">
+        <v-text-field
+            density="compact"
+            variant="outlined"
+            v-model="configStore.config.common.backend_endpoint"
+            class="common_text_entry"
+            hide-details="auto"
+            label="后端地址" placeholder="192.168.2.2:8080"></v-text-field>
+        <v-text-field
+            density="compact"
+            variant="outlined" v-model="configStore.config.common.db_endpoint" class="common_text_entry"
+            hide-details="auto"
+            label="数据库地址" placeholder="192.168.2.2:8600"></v-text-field>
+        <v-text-field
+            density="compact"
+            variant="outlined" v-model="configStore.config.common.db_database" class="common_text_entry"
+            hide-details="auto"
+            label="数据库名称"></v-text-field>
+        <v-text-field
+            density="compact"
+            variant="outlined" v-model="configStore.config.common.db_user"
+            class="common_text_entry"
+            hide-details="auto"
+            label="数据库用户名"></v-text-field>
+        <v-text-field
+            density="compact"
+            variant="outlined"
+            v-model="configStore.config.common.db_password"
+            class="common_text_entry"
+            hide-details="auto"
+            label="数据库密码"></v-text-field>
+      </v-responsive>
 
 
-    <v-btn color="success" class="w-100" :loading="connecting" @click="testConnect()">
-      <strong>连接测试</strong>
-    </v-btn>
-    <v-snackbar v-model="infoBarShow" multi-line>
-      {{ infoBarText }}
-      <template v-slot:actions>
-        <v-btn
-            color="red"
-            variant="text"
-            @click="infoBarShow = false">
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
-
-    <div style="padding-top: 10px">
-      <v-divider class="border-opacity-75"></v-divider>
+      <v-btn color="success" class="w-100" :loading="connecting" @click="testConnect()">
+        <strong>连接测试</strong>
+      </v-btn>
+      <v-snackbar v-model="infoBarShow" multi-line>
+        {{ infoBarText }}
+        <template v-slot:actions>
+          <v-btn
+              color="red"
+              variant="text"
+              @click="infoBarShow = false">
+            Close
+          </v-btn>
+        </template>
+      </v-snackbar>
     </div>
 
-    <v-card-title class="text-lg-h5">
-      <strong>运行配置</strong>
-    </v-card-title>
-    <v-tabs v-model="runningMode">
-      <v-tab value="current">实时上数</v-tab>
-      <v-tab value="history">历史上数</v-tab>
-    </v-tabs>
-    <v-window v-model="runningMode">
-      <v-window-item value="current">
-        <v-text-field
+    <div v-show="connectSuccess">
+      <v-card-title class="text-lg-h5">
+        <strong>运行配置</strong>
+      </v-card-title>
+      <v-tabs v-model="runningMode">
+        <v-tab value="current">实时上数</v-tab>
+        <v-tab value="history">历史上数</v-tab>
+      </v-tabs>
+      <v-window v-model="runningMode">
+        <v-window-item value="current">
+          <v-text-field
+              density="compact"
+              hide-details
+              variant="outlined"
+              v-model="timeInterval"
+              class="common_text_entry"
+              label="时间间隔(ms)"></v-text-field>
+        </v-window-item>
+
+        <v-window-item value="history">
+          <div style="padding-bottom:10px;padding-top: 10px">
+            <el-date-picker
+                style="width: 100%;"
+                v-model="timeScope"
+                type="datetimerange"
+                range-separator="至"
+                start-placeholder="开始时间"
+                end-placeholder="结束时间"/>
+          </div>
+          <v-text-field
+              density="compact"
+              hide-details
+              variant="outlined"
+              v-model="time_step"
+              class="common_text_entry"
+              label="步长(ms)">
+          </v-text-field>
+          <div style="padding: 10px">
+            <v-progress-linear
+                v-show="running&&runningMode==='history'"
+                height="13px"
+                color="teal"
+                v-model:model-value="progress"
+                stream>
+              <template v-slot:default="{ value }">
+                <strong style="font-size: small">进度:{{ Math.ceil(value) }}%</strong>
+              </template>
+            </v-progress-linear>
+          </div>
+
+        </v-window-item>
+      </v-window>
+
+      <v-btn style="margin-right: 1%;text-align: center" :disabled=running @click="run()" width="49%"
+             color="success">
+        <strong>运行</strong>
+      </v-btn>
+      <v-btn style="margin-left: 1%" :disabled=!running @click="stop()" width="49%" color="warning">
+        <strong>停止</strong>
+      </v-btn>
+      <div style="padding-top: 10px;padding-right: 10px;">
+
+        <v-textarea
+            id="textarea"
+            bg-color="#1f1f1f"
             density="compact"
-            hide-details
-            variant="outlined"
-            v-model="timeInterval"
-            class="common_text_entry"
-            label="时间间隔(ms)"></v-text-field>
-      </v-window-item>
-
-      <v-window-item value="history">
-        <div style="padding-bottom:10px;padding-top: 10px">
-          <el-date-picker
-              style="width: 100%;"
-              v-model="timeScope"
-              type="datetimerange"
-              range-separator="至"
-              start-placeholder="开始时间"
-              end-placeholder="结束时间"/>
-        </div>
-        <v-text-field
-            density="compact"
-            hide-details
-            variant="outlined"
-            v-model="time_step"
-            class="common_text_entry"
-            label="步长(ms)">
-        </v-text-field>
-        <div style="padding: 10px">
-          <v-progress-linear
-              v-show="running"
-              height="13px"
-              color="teal"
-              v-model:model-value="progress"
-              stream>
-            <template v-slot:default="{ value }">
-              <strong style="font-size: small">进度:{{ Math.ceil(value) }}%</strong>
-            </template>
-          </v-progress-linear>
-        </div>
-
-      </v-window-item>
-    </v-window>
-
-    <v-btn style="margin-right: 1%;text-align: center" :disabled=running @click="run()" width="49%"
-           color="success">
-      <strong>运行</strong>
-    </v-btn>
-    <v-btn style="margin-left: 1%" :disabled=!running @click="stop()" width="49%" color="warning">
-      <strong>停止</strong>
-    </v-btn>
-    <v-textarea
-        style="padding-top: 10px"
-        density="compact"
-        :dense="true"
-        v-model="log"
-        label="日志"
-        variant="outlined"
-        class="logTextarea">
-    </v-textarea>
+            :dense="true"
+            v-model="log"
+            label="日志"
+            class="logTextarea">
+        </v-textarea>
+      </div>
+    </div>
   </v-card>
 
 </template>
@@ -238,21 +244,28 @@ function testConnect() {
 /deep/ .v-textarea textarea {
   line-height: 1em;
   font-size: small;
-  height: 200px;
+  height: 100%;
+  color: #d3d3d3;
+
 }
 
-/deep/  .el-date-table-cell {
-  background-color: #bebebe;
-}
-/deep/ .el-date-editor  {
-  --el-input-bg-color: #222222;
-  --el-text-color-placeholder: white;
-  color: white;
+.logTextarea {
+  position: absolute;
+  width: 94%;
+  height: 100%;
+
 }
 
-/deep/ .el-date-editor .el-range-input{
-  color:white;
+/*/deep/ .el-date-table-cell {*/
+/*  background-color: #bebebe;*/
+/*}*/
+
+/deep/ .el-date-editor {
+  --el-input-bg-color: #ffffff;
+  --el-text-color-placeholder: black;
 }
+
+
 
 
 </style>
