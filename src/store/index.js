@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+import {defineStore} from 'pinia'
 
 export const useConfigStore = defineStore('config', {
     state: () => {
@@ -11,7 +11,7 @@ export const useConfigStore = defineStore('config', {
                     db_password: "bce_cloud#",
                     db_database: "objectmanager"
                 },
-                models_conf: []
+                modelConfs: []
             }
         }
     },

@@ -6,14 +6,24 @@ import Header from "./components/Header.vue"
 
 <template>
   <v-layout>
-    <Header />
+    <v-app-bar variant="outlined">
+      <Header/>
+    </v-app-bar>
     <v-main>
-      <Left />
+      <v-container fluid>
+        <v-row dense>
+          <v-col cols="6">
+            <Left style="padding: 3%; margin: 1%;" class="h-100"/>
+          </v-col>
+          <v-col cols="6">
+            <Right style="padding: 3%; margin: 1%;" class="h-100"/>
+          </v-col>
+        </v-row>
+      </v-container>
     </v-main>
-    <v-main>
-      <Right />
-    </v-main>
+
   </v-layout>
 </template>
 
-<style scoped></style>
+<style scoped>
+</style>

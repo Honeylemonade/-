@@ -1,0 +1,57 @@
+[
+  {
+    "modelName": "mock_data_model",
+    "modelDisplayName": "数据模拟测试模型",
+    "objectNameList": [
+      "mock_device_3",
+      "mock_device_2"
+    ],
+    "propertyConfs": [
+      {
+        "data_type": "double",
+        "display_name": "温度",
+        "name": "temp",
+        "enable": true,
+        "is_random": true,
+        "const": 21
+      },
+      {
+        "data_type": "boolean",
+        "display_name": "是否可用",
+        "name": "available",
+        "enable": true,
+        "is_random": true,
+        "const": false
+      }
+    ]
+  },
+  {
+    "modelName": "lyj31601",
+    "modelDisplayName": "lyj31601",
+    "objectNameList": ["12casf"],
+    "propertyConfs": [
+      {
+        "data_type": "string",
+        "display_name": "模型存储地址",
+        "name": "modelSaveAddress",
+        "enable": true,
+        "const": ["a","b","c"],
+        "is_random": true,
+        "lower_bound": 1,
+        "upper_bound": 1,
+        "dp": 1
+      },
+      {
+        "data_type": "double",
+        "display_name": "模型存储地址",
+        "name": "haha",
+        "enable": true,
+        "const": ["a","b","c"],
+        "is_random": true,
+        "lower_bound": 1,
+        "upper_bound": 12,
+        "dp": 13
+      }
+    ]
+  }
+]

@@ -1,0 +1,30 @@
+[
+  {
+    "modelName": "mock_data_model",
+    "modelDisplayName": "数据模拟测试模型",
+    "objectNameList": [],
+    "propertyConfs": [
+      {
+        "data_type": "long",
+        "display_name": "编号",
+        "name": "code",
+        "enable": true,
+        "const": 1
+      },
+      {
+        "data_type": "double",
+        "display_name": "温度",
+        "name": "temp",
+        "enable": true,
+        "const": 23
+      },
+      {
+        "data_type": "boolean",
+        "display_name": "是否可用",
+        "name": "available",
+        "enable": true,
+        "is_random": true
+      }
+    ]
+  }
+]
