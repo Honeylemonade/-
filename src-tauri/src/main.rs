@@ -30,9 +30,6 @@ fn main() {
             //#[cfg(debug_assertions)] // only include this code on debug builds
             {
                 let window = app.get_window("main").unwrap();
-                window.maximize().expect("最大化异常");
-                window.open_devtools();
-                window.close_devtools();
             }
             Ok(())
         })

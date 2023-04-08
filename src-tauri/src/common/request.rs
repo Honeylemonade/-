@@ -35,6 +35,12 @@ pub enum RunningMode {
 }
 
 #[derive(Clone, serde::Deserialize, serde::Serialize)]
+pub struct ModelState {
+    model_name: String,
+    state: bool,
+}
+
+#[derive(Clone, serde::Deserialize, serde::Serialize)]
 pub struct TimeConf {
     time_interval: u64,
     start_time: u64,
@@ -84,7 +90,7 @@ pub fn run(running_mode: RunningMode, time_conf: TimeConf, backend_end_point: St
 pub fn stop(window: Window) {
     SHOULD_RUN.store(false, Ordering::Relaxed);
     debug!("stop!");
-    window.emit("log", "任务停止").unwrap();
+    window.emit("log", "========任务停止========").unwrap();
 }
 
 
@@ -142,7 +148,7 @@ fn history_run(start_time: u64, end_time: u64, time_step: u64, backend_end_point
 
 
 fn do_task(timestamp: u64, backend_end_point: &str, model_confs: Value, window: Window) {
-    window.emit("log", format!("开始执行任务")).unwrap();
+    window.emit("log", format!("========任务开始========")).unwrap();
     // 针对每一个模型配置生成 item
     for model_conf in model_confs.as_array().unwrap() {
         let model_name = model_conf.as_object().unwrap().get("modelName").unwrap();
@@ -168,6 +174,7 @@ fn do_task(timestamp: u64, backend_end_point: &str, model_confs: Value, window: 
 
             let mut message_list_item: Map<String, Value> = Map::new();
             message_list_item.insert(String::from("modelName"), model_name.clone());
+            message_list_item.insert(String::from("timestamp"), Value::Number(serde_json::Number::from(timestamp)));
             message_list_item.insert(String::from("objectName"), Value::String(String::from(object_name)));
             message_list_item.insert(String::from("properties"), Value::Object(properties.clone()));
 
@@ -177,7 +184,9 @@ fn do_task(timestamp: u64, backend_end_point: &str, model_confs: Value, window: 
         //body_map.insert(String::from("messageList"), Value::from(message_list.clone()));
 
         // post 请求要创建client
-        let client = reqwest::Client::new();
+        let client = reqwest::blocking::ClientBuilder::new()
+            .timeout(Duration::from_secs(2))
+            .build().unwrap();
 
         // 组装header
         let mut headers = HeaderMap::new();
@@ -192,15 +201,25 @@ fn do_task(timestamp: u64, backend_end_point: &str, model_confs: Value, window: 
             .json(&data)
             .send();
 
-        match block_on(response) {
+        match response {
             Ok(_) => {
                 println!("发送成功");
                 window.emit("log", format!("写入模型[{}]数据成功", model_name.clone())).unwrap();
                 window.emit("log", &serde_json::to_string(&data).unwrap()).unwrap();
+                // 记录模型状态
+                window.emit("model_state", ModelState {
+                    model_name: String::from(model_name.as_str().unwrap()),
+                    state: true,
+                }).unwrap();
             }
             Err(e) => {
                 println!("发送失败:{}", e);
                 window.emit("log", format!("写入模型[{}]数据失败", model_name.clone())).unwrap();
+                // 记录模型状态
+                window.emit("model_state", ModelState {
+                    model_name: String::from(model_name.as_str().unwrap()),
+                    state: false,
+                }).unwrap();
             }
         }
     }
@@ -214,9 +233,9 @@ fn build_value(property_conf: &Value) -> Option<(&str, Value)> {
     let key = property_conf.get("name").unwrap().as_str().unwrap();
     let data_type = property_conf.get("data_type").unwrap().as_str().unwrap();
     let is_random = property_conf.get("is_random").unwrap_or(&Value::Bool(false)).as_bool().unwrap();
-    let lower_bound = property_conf.get("lower_bound").unwrap_or(&Value::Number(Number::from(-100000))).as_f64().unwrap();
-    let upper_bound = property_conf.get("upper_bound").unwrap_or(&Value::Number(Number::from(100000))).as_f64().unwrap();
-    let dp = property_conf.get("dp").unwrap_or(&Value::Number(Number::from(2))).as_i64().unwrap();
+    let lower_bound = property_conf.get("lower_bound").unwrap_or(&Value::Number(serde_json::Number::from(-100000))).as_f64().unwrap();
+    let upper_bound = property_conf.get("upper_bound").unwrap_or(&Value::Number(serde_json::Number::from(100000))).as_f64().unwrap();
+    let dp = property_conf.get("dp").unwrap_or(&Value::Number(serde_json::Number::from(2))).as_i64().unwrap();
 
     // 常量
     if !is_random {
