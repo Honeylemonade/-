@@ -7,8 +7,8 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "apaas-vue-tool",
-    "version": "0.1.0"
+    "productName": "aPaaS数据模拟工具",
+    "version": "2.0.0"
   },
   "tauri": {
     "allowlist": {
@@ -65,9 +65,9 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 695,
         "resizable": true,
-        "title": "apaas-vue-tool",
+        "title": "aPaaS数据模拟工具",
         "width": 800
       }
     ]
