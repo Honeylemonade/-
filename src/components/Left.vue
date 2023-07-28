@@ -236,7 +236,7 @@ function updateCurrentModelConfig() {
 
           <!--实例-->
           <v-autocomplete
-              style="padding: 10px"
+              style="padding: 10px; z-index: 4000"
               density="compact"
               variant="outlined"
               v-model="modelDialog.selectObject"
@@ -258,15 +258,15 @@ function updateCurrentModelConfig() {
           </v-autocomplete>
 
           <!--属性配置-->
-          <v-table density="compact" fixed-header>
+          <v-table density="compact" fixed-header style="font-size: 12px">
             <thead>
             <tr>
-              <th>启用</th>
-              <th>属性名称</th>
-              <th>属性标识</th>
-              <th>数据类型</th>
+              <th style="width: 60px">启用</th>
+              <th style="width: 100px">属性名称</th>
+              <th style="width: 100px">属性标识</th>
+              <th style="width: 100px">数据类型</th>
               <th>固定值</th>
-              <th>随机值</th>
+              <th style="width: 80px">随机值</th>
               <th>下界</th>
               <th>上界</th>
               <th>小数点位数</th>
@@ -276,13 +276,15 @@ function updateCurrentModelConfig() {
             <tr v-for="item in modelDialog.propertyConfs" :key="item.name">
               <td>
                 <v-checkbox
+                    :disabled="item.data_type=='timestamp'||item.data_type=='date'||item.data_type=='time'||item.data_type=='dateTime'||item.data_type=='Enum'"
+                    :indeterminate="item.data_type=='timestamp'||item.data_type=='date'||item.data_type=='time'||item.data_type=='dateTime'||item.data_type=='Enum'"
                     density="compact"
                     v-model="item.enable"></v-checkbox>
               </td>
               <td>{{ item.display_name }}</td>
               <td>{{ item.name }}</td>
               <td>{{ item.data_type }}</td>
-              <td>
+              <td style="width: 150px">
                 <v-text-field
                     density="compact"
                     variant="outlined"
@@ -290,13 +292,13 @@ function updateCurrentModelConfig() {
                     v-model="item.const"
                     label="固定值"></v-text-field>
               </td>
-              <td>
+              <td style="width: 70px">
                 <v-checkbox
                     density="compact"
                     v-show="item.enable"
                     v-model="item.is_random"></v-checkbox>
               </td>
-              <td>
+              <td style="width: 100px">
                 <v-text-field
                     density="compact"
                     variant="outlined"
@@ -304,7 +306,7 @@ function updateCurrentModelConfig() {
                     v-model="item.lower_bound"
                     label="下界"></v-text-field>
               </td>
-              <td>
+              <td style="width: 100px">
                 <v-text-field
                     density="compact"
                     variant="outlined"
@@ -312,13 +314,13 @@ function updateCurrentModelConfig() {
                     v-model="item.upper_bound"
                     label="上界"></v-text-field>
               </td>
-              <td>
+              <td style="width: 100px">
                 <v-text-field
                     density="compact"
                     variant="outlined"
                     v-show="item.is_random&&item.data_type==='double'&&item.enable"
                     v-model="item.dp"
-                    label="小数点位数"></v-text-field>
+                    label="位数"></v-text-field>
               </td>
             </tr>
             </tbody>
@@ -351,7 +353,7 @@ function updateCurrentModelConfig() {
               <!--正常时-->
               <v-badge v-show="modelState.get(item.modelName)" content="正常" color="success">
                 <div>
-                  <strong>{{ item.modelDisplayName}}   </strong>
+                  <strong>{{ item.modelDisplayName }} </strong>
                   <v-icon icon="mdi-bell-ring"></v-icon>
                 </div>
               </v-badge>
@@ -387,14 +389,18 @@ function updateCurrentModelConfig() {
 
 </template>
 
-<style scoped>
+<style>
 /deep/ .v-text-field input {
   font-size: 0.8em;
 }
 
-/deep/ .v-input__details {
-  display: none;
+.v-input__details {
+  display: none !important;
 }
 
+.v-overlay-container .v-menu {
+  z-index: 2411 !important;
+  color: red;
+}
 
 </style>

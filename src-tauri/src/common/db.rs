@@ -1,3 +1,4 @@
+use core::time;
 use std::collections::HashMap;
 use urlencoding::encode;
 use log::{debug, info};
@@ -46,7 +47,8 @@ pub fn test_db_connect(db_end_point: &str,
     let url = format!("mysql://{}:{}@{}/{}", user_name, encode(password), db_end_point, database);
     info!("url={}",url);
 
-    let pool_future = MySqlPoolOptions::new().connect(&url);
+    let pool_future = MySqlPoolOptions::new().acquire_timeout(time::Duration::from_secs(2))
+        .connect(&url);
     //let timeout_future = timeout(std::time::Duration::from_secs(1), pool_future);
     let pool = match block_on(pool_future) {
         Ok(pool) => pool,

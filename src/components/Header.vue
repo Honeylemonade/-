@@ -82,8 +82,7 @@ async function saveConfig() {
       <v-card>
         <v-card-text>
           <strong>
-            📚使用手册参考:Slink
-            数据模拟工具 https://ku.baidu-int.com/knowledge/HFVrC7hq1Q/LtinBUYBKY/FcCtZVI_f5/S1fyDXx0SkX-TP
+            📚使用手册参考
             <br>
             <br>
             🤔其他问题联系 xuyanpeng01@baidu.com (๑•̀ㅂ•́)و✧

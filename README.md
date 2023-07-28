@@ -10,20 +10,14 @@ This template should help get you started developing with Vue 3 in Vite.
 
 See [Vite Configuration Reference](https://vitejs.dev/config/).
 
-## Project Setup
+## 开启调试
 
 ```sh
-npm install
+npm run tauri dev
 ```
 
-### Compile and Hot-Reload for Development
+## 构建项目
 
 ```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
+npm run tauri build
 ```

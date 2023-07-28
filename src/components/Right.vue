@@ -73,6 +73,12 @@ async function onListenProgress() {
   })
 }
 
+function testConnectAsync() {
+  return new Promise(function (resolve, reject) {
+    setTimeout(testConnect(), 1000)
+  })
+
+}
 
 function testConnect() {
   let db_conf = configStore.value.config;
@@ -114,12 +120,12 @@ function testConnect() {
             v-model="configStore.config.common.backend_endpoint"
             class="common_text_entry"
             hide-details="auto"
-            label="后端地址" placeholder="192.168.2.2:8080"></v-text-field>
+            label="后端地址" placeholder="192.168.0.0:8080"></v-text-field>
         <v-text-field
             density="compact"
             variant="outlined" v-model="configStore.config.common.db_endpoint" class="common_text_entry"
             hide-details="auto"
-            label="数据库地址" placeholder="192.168.2.2:8600"></v-text-field>
+            label="数据库地址" placeholder="192.168.0.0:8080"></v-text-field>
         <v-text-field
             density="compact"
             variant="outlined" v-model="configStore.config.common.db_database" class="common_text_entry"
@@ -141,7 +147,7 @@ function testConnect() {
       </v-responsive>
 
 
-      <v-btn color="success" class="w-100" :loading="connecting" @click="testConnect()">
+      <v-btn color="success" class="w-100" :loading="connecting" @click="testConnectAsync()">
         <strong>连接测试</strong>
       </v-btn>
       <v-snackbar v-model="infoBarShow" multi-line>
@@ -264,8 +270,6 @@ function testConnect() {
   --el-input-bg-color: #ffffff;
   --el-text-color-placeholder: black;
 }
-
-
 
 
 </style>
